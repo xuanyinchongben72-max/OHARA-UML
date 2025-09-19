@@ -1,0 +1,13 @@
+@startuml logout_sequence
+actor ユーザー
+participant UI画面
+participant 認証制御
+participant セッション情報
+
+ユーザー -> UI画面 : 「ログアウト」をクリック
+UI画面 -> 認証制御 : ログアウト要求を送信
+認証制御 -> セッション情報 : セッション削除
+セッション情報 --> 認証制御 : 削除完了
+認証制御 -> UI画面 : ログアウト完了通知
+UI画面 -> ユーザー : ログイン画面へ遷移
+@enduml
