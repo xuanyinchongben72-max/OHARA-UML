@@ -1,0 +1,56 @@
+@startuml 返却処理シーケンス図
+hide footbox
+skinparam boundaryBackgroundColor #D5E8D4
+skinparam controlBackgroundColor  #F8CECC
+skinparam entityBackgroundColor   #DAE8FC
+
+actor 図書館事務職員 as A
+boundary 返却画面 as B1
+control 返却処理 as C1
+entity 貸出記録 as E1
+entity 所蔵資料 as E2
+control 予約通知処理 as C2
+entity 予約情報 as E3
+
+A -> B1: 返却資料を提示()
+activate B1
+
+B1 -> C1: 返却処理開始()
+activate C1
+
+alt 貸出記録が存在しない
+    C1 -> B1: エラーメッセージ表示("未貸出本です")
+    deactivate C1
+    deactivate B1
+else 貸出記録が存在する
+    C1 -> E1: 貸出記録を検索・返却日更新()
+    activate E1
+    E1 --> C1
+    deactivate E1
+
+    C1 -> E2: 資料状態を「利用可能」に変更()
+    activate E2
+    E2 --> C1
+    deactivate E2
+
+    C1 -> C2: 予約確認()
+    activate C2
+
+    C2 -> E3: 予約情報を検索()
+    activate E3
+    E3 --> C2
+    deactivate E3
+
+    alt 予約者が存在する
+        C2 -> B1: 予約者へ通知()
+    else
+        C2 -> B1: 通知なし
+    end
+    deactivate C2
+
+    C1 -> B1: 返却完了表示()
+    deactivate C1
+    deactivate B1
+end
+
+@enduml
